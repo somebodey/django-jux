@@ -8,7 +8,14 @@ from xml.etree import ElementTree as ET
 
 from django.conf import settings
 from django.test.runner import DiscoverRunner
-from django.utils.unittest import TextTestRunner, TextTestResult
+
+try:
+    # Django 1.6
+    from django.utils.unittest import TextTestRunner, TextTestResult
+except ImportError:
+    # Django 1.7+ because bundled unittest is going away
+    from unittest import TextTestRunner, TextTestResult
+
 
 class JUXDTestResult(TextTestResult):
     def startTest(self, test):
