@@ -65,7 +65,7 @@ class JUXDTestResult(TextTestResult):
         run_time_taken = time.time() - self.run_start_time
         self.tree.set('name', 'Django Project Tests')
         self.tree.set('errors', str(len(self.errors)))
-        self.tree.set('failures' , str(len(self.failures)))
+        self.tree.set('failures', str(len(self.failures)))
         self.tree.set('skips', str(len(self.skipped)))
         self.tree.set('tests', str(self.testsRun))
         self.tree.set('time', "%.3f" % run_time_taken)
@@ -75,7 +75,11 @@ class JUXDTestResult(TextTestResult):
         super(JUXDTestResult, self).stopTestRun()
 
     def _make_testcase_element(self, test):
-        time_taken = time.time() - self.case_start_time
+        # In some failure scenarios, self.case_start_time does not exist (for example if fixtures fail to load)
+        if hasattr(self, 'case_start_time'):
+            time_taken = time.time() - self.case_start_time
+        else:
+            time_taken = 0
         classname = ('%s.%s' % (test.__module__, test.__class__.__name__)).split('.')
         testcase = ET.SubElement(self.tree, 'testcase')
         testcase.set('time', "%.6f" % time_taken)
